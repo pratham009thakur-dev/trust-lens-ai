@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # Relational DB for Users and Sessions
+  postgres:
+    image: postgres:15-alpine
+    container_name: trustlens_postgres
+    environment:
+      POSTGRES_USER: trustadmin
+      POSTGRES_PASSWORD: TrustSecurePassword2026!
+      POSTGRES_DB: trustlens_auth
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - trustlens_network
+
+  # NoSQL Document Store for Scan Telemetry Logs
+  mongodb:
+    image: mongo:6.0
+    container_name: trustlens_mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: trustadmin
+      MONGO_INITDB_ROOT_PASSWORD: TrustMongoPassword2026!
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodata:/data/db
+    networks:
+      - trustlens_network
+
+  # In-Memory Cache & Rate Limiter
+  redis:
+    image: redis:7.0-alpine
+    container_name: trustlens_redis
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass TrustRedisPassword2026!
+    networks:
+      - trustlens_network
+
+volumes:
+  pgdata:
+  mongodata:
+
+networks:
+  trustlens_network:
+    driver: bridge
